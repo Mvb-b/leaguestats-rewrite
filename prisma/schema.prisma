@@ -1,0 +1,246 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============== ENUMS ==============
+
+enum Region {
+  br
+  eune
+  euw
+  jp
+  kr
+  lan
+  las
+  na
+  oce
+  tr
+  ru
+  ph
+  sg
+  th
+  tw
+  vn
+
+  @@map("region")
+}
+
+enum QueueType {
+  RANKED_SOLO_5x5
+  RANKED_FLEX_SR
+  RANKED_FLEX_TT
+  RANKED_TFT
+
+  @@map("queue_type")
+}
+
+enum Tier {
+  IRON
+  BRONZE
+  SILVER
+  GOLD
+  PLATINUM
+  EMERALD
+  DIAMOND
+  MASTER
+  GRANDMASTER
+  CHALLENGER
+
+  @@map("tier")
+}
+
+// ============== MODELS ==============
+
+model Summoner {
+  puuid String @id @db.Uuid
+
+  gameName      String   @db.VarChar(32)
+  tagLine       String   @db.VarChar(8)
+  summonerLevel Int      @default(1) @map("summoner_level")
+  profileIconId Int      @default(1) @map("profile_icon_id")
+  revisionDate  DateTime @map("revision_date") @db.Timestamp(3)
+  region        String   @db.VarChar(10)
+
+  lastUpdatedAt DateTime @updatedAt @map("last_updated_at") @db.Timestamp(3)
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamp(3)
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamp(3)
+
+  matchList SummonerMatchlist[]
+  names     SummonerName[]
+  matches   MatchPlayer[]
+
+  @@index([region])
+  @@index([gameName, tagLine])
+  @@index([lastUpdatedAt])
+  @@map("summoners")
+}
+
+model SummonerName {
+  id Int @id @default(autoincrement())
+
+  summonerPuuid String @map("summoner_puuid") @db.Uuid
+  gameName      String @db.VarChar(32) @map("game_name")
+  previousNick  String? @db.VarChar(32) @map("previous_nick")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(3)
+
+  summoner Summoner @relation(fields: [summonerPuuid], references: [puuid], onDelete: Cascade)
+
+  @@index([summonerPuuid])
+  @@index([gameName])
+  @@map("summoner_names")
+}
+
+model Match {
+  matchId String @id @db.VarChar(32) @map("match_id")
+
+  dataVersion String   @db.VarChar(16) @map("data_version")
+  metadata    Json?
+
+  gameCreation DateTime @map("game_creation") @db.Timestamp(3)
+  gameDuration Int      @map("game_duration")
+  gameMode     String   @db.VarChar(32) @map("game_mode")
+  gameType     String   @db.VarChar(32) @map("game_type")
+  queueId      Int      @map("queue_id")
+  mapId        Int      @map("map_id")
+  patch        String   @db.VarChar(16)
+  season       Int      @default(0)
+  region       String   @db.VarChar(10)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(3)
+
+  teams   MatchTeam[]
+  players MatchPlayer[]
+
+  @@index([gameCreation])
+  @@index([queueId])
+  @@index([mapId])
+  @@index([season])
+  @@index([region])
+  @@index([gameCreation, season])
+  @@index([patch])
+  @@map("matches")
+}
+
+model MatchTeam {
+  id Int @id @default(autoincrement())
+
+  matchId String @map("match_id") @db.VarChar(32)
+  teamId  Int    @map("team_id")
+
+  win               Boolean
+  towerKills        Int     @map("tower_kills")
+  inhibitorKills    Int     @map("inhibitor_kills")
+  baronKills        Int     @map("baron_kills")
+  dragonKills       Int     @map("dragon_kills")
+  riftHeraldKills   Int     @default(0) @map("rift_herald_kills")
+  elderDragonKills  Int     @default(0) @map("elder_dragon_kills")
+  bans              Int[]   @db.Integer
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(3)
+
+  match Match @relation(fields: [matchId], references: [matchId], onDelete: Cascade)
+
+  @@index([matchId])
+  @@index([teamId])
+  @@unique([matchId, teamId])
+  @@map("match_teams")
+}
+
+model MatchPlayer {
+  id Int @id @default(autoincrement())
+
+  matchId       String @map("match_id") @db.VarChar(32)
+  summonerPuuid String @map("summoner_puuid") @db.Uuid
+  puuid         String @db.Uuid
+  summonerName  String @db.VarChar(32) @map("summoner_name")
+  teamId        Int    @map("team_id")
+
+  championId    Int    @map("champion_id")
+  championName  String @db.VarChar(64) @map("champion_name")
+  championLevel Int    @default(1) @map("champion_level")
+
+  win                       Boolean @default(false)
+  gameEndedInSurrender      Boolean @default(false) @map("game_ended_in_surrender")
+  gameEndedInEarlySurrender Boolean @default(false) @map("game_ended_in_early_surrender")
+
+  kills   Int
+  deaths  Int
+  assists Int
+  kda     Float
+  kp      Float   @default(0)
+
+  cs            Int
+  csPerMinute   Float @default(0) @map("cs_per_minute")
+  goldEarned    Int   @map("gold_earned")
+  goldPerMinute Float @default(0) @map("gold_per_minute")
+  goldSpent     Int   @default(0) @map("gold_spent")
+
+  totalDamageDealt              Int @default(0) @map("total_damage_dealt")
+  totalDamageDealtToChampions   Int @default(0) @map("total_damage_dealt_to_champions")
+  totalDamageTaken              Int @default(0) @map("total_damage_taken")
+  physicalDamageDealtToChampions Int @default(0) @map("physical_damage_dealt_to_champions")
+  magicDamageDealtToChampions    Int @default(0) @map("magic_damage_dealt_to_champions")
+  trueDamageDealtToChampions     Int @default(0) @map("true_damage_dealt_to_champions")
+  damageSelfMitigated            Int @default(0) @map("damage_self_mitigated")
+
+  totalHeal     Int @default(0) @map("total_heal")
+  totalHealsOnTeammates Int @default(0) @map("total_heals_on_teammates")
+  totalDamageShieldedOnTeammates Int @default(0) @map("total_damage_shielded_on_teammates")
+
+  turretKills      Int @default(0) @map("turret_kills")
+  inhibitorKills   Int @default(0) @map("inhibitor_kills")
+  nexusKilled      Boolean @default(false) @map("nexus_killed")
+  baronKills       Int @default(0) @map("baron_kills")
+  dragonKills      Int @default(0) @map("dragon_kills")
+  riftHeraldKills  Int @default(0) @map("rift_herald_kills")
+  elderDragonKills Int @default(0) @map("elder_dragon_kills")
+
+  visionScore      Int @default(0) @map("vision_score")
+  wardsPlaced      Int @default(0) @map("wards_placed")
+  wardsKilled      Int @default(0) @map("wards_killed")
+  visionWardsBoughtInGame Int @default(0) @map("vision_wards_bought_in_game")
+  sightWardsBoughtInGame  Int @default(0) @map("sight_wards_bought_in_game")
+
+  timeCCingOthers    Int @default(0) @map("time_ccing_others")
+  totalTimeCCDealt   Int @default(0) @map("total_time_cc_dealt")
+  totalTimeSpentDead Int @default(0) @map("total_time_spent_dead")
+
+  doubleKills  Int @default(0) @map("double_kills")
+  tripleKills  Int @default(0) @map("triple_kills")
+  quadraKills  Int @default(0) @map("quadra_kills")
+  pentaKills   Int @default(0) @map("penta_kills")
+  unrealKills  Int @default(0) @map("unreal_kills")
+
+  item0 Int @default(0) @map("item_0")
+  item1 Int @default(0) @map("item_1")
+  item2 Int @default(0) @map("item_2")
+  item3 Int @default(0) @map("item_3")
+  item4 Int @default(0) @map("item_4")
+  item5 Int @default(0) @map("item_5")
+  item6 Int @default(0) @map("item_6")
+
+  primaryRunePath   Int @default(0) @map("primary_rune_path")
+  primaryRune       Int @default(0) @map("primary_rune")
+  secondaryRunePath Int @default(0) @map("secondary_rune_path")
+
+  perk0 Int @default(0) @map("perk_0")
+  perk1 Int @default(0) @map("perk_1")
+  perk2 Int @default(0) @map("perk_2")
+  perk3 Int @default(0) @map("perk_3")
+  perk4 Int @default(0) @map("perk_4")
+  perk5 Int @default(0) @map("perk_5")
+
+  statPerk0 Int @default(0) @map("stat_perk_0")
+  statPerk1 Int @default(0) @map("stat_perk_1")
+  statPerk2 Int @
