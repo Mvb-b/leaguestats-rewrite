@@ -1,85 +1,137 @@
-# GameStats
+# GameStats Dashboard
 
-Aplicación de estadísticas para ligas deportivas.
+A modern League of Legends statistics dashboard built with Next.js 14, TypeScript, Tailwind CSS, and shadcn/ui.
 
-## Stack
+## Features
 
-- Next.js 14 (App Router)
-- TypeScript
-- Tailwind CSS
-- shadcn/ui
-- PostgreSQL + Prisma
+- **Summoner Search**: Search for any summoner by name and tag with region selector
+- **Profile Overview**: View summoner level, rank, LP, and winrate with tier badges
+- **Match History**: Detailed match list with KDA, CS/min, champion info and victory/defeat indicators
+- **Champion Stats**: Analyze performance by champion with winrate bars and KDA
+- **Personal Records**: Track your best performances across different metrics
+- **Dark Theme**: Gamer aesthetic with League of Legends-inspired blue/cyan gradients
 
-## Setup Local
+## Tech Stack
 
+- **Framework**: Next.js 14 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Components**: shadcn/ui (Button, Card, Input, Tabs, Avatar, Badge)
+- **Icons**: Lucide React
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- npm
+
+### Installation
+
+1. Navigate to the project directory:
 ```bash
-# Instalar dependencias
+cd /data/workspace/projects/gamestats-rewrite
+```
+
+2. Install dependencies (already done):
+```bash
 npm install
+```
 
-# Configurar variables de entorno
-# Crear archivo .env basado en .env.example
-
-# Correr migraciones de Prisma
-npx prisma migrate dev
-
-# Iniciar servidor de desarrollo
+3. Run the development server:
+```bash
 npm run dev
 ```
 
-## Variables de Entorno
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-| Variable | Descripción | Ejemplo |
-|----------|-------------|---------|
-| `DATABASE_URL` | URL de PostgreSQL | `postgresql://user:pass@localhost:5432/gamestats` |
-| `NEXTAUTH_SECRET` | Secret para NextAuth | `random-string-32-chars` |
-| `NEXTAUTH_URL` | URL de la app | `http://localhost:3000` |
-
-## Comandos Útiles
-
-```bash
-# Build de producción
-npm run build
-
-# Comprobar build
-npm run build 2>&1 | tail -20
-
-# Linting
-npm run lint
-
-# Migraciones Prisma
-npx prisma migrate dev --name migration_name
-npx prisma generate
-npx prisma studio
-
-# Chequear status git
-git status
-```
-
-## Estructura de Carpetas
+## Project Structure
 
 ```
 app/
-  (routes)/        # Rutas agrupadas con layout compartido
-  api/             # API routes
-  globals.css      # Estilos globales
-  layout.tsx       # Layout raíz
-  page.tsx         # Home page
-components/ui/     # Componentes shadcn
+├── components/
+│   ├── SearchForm.tsx       # Search input with region selector
+│   ├── SummonerHeader.tsx   # Summoner profile header with avatar
+│   ├── StatsGrid.tsx        # Quick stats cards (Win rate, KDA, CS/min)
+│   ├── MatchList.tsx        # Match history list
+│   ├── ChampionStats.tsx    # Champion statistics
+│   └── RecordView.tsx       # Personal records display
+├── summoner/
+│   └── [region]/
+│       └── [gameName]/
+│           └── [tagLine]/
+│               └── page.tsx # Summoner profile page
+├── page.tsx                 # Home/Search page
+├── layout.tsx               # Root layout with dark theme
+└── globals.css              # Global styles
+
+components/ui/               # shadcn/ui components
 lib/
-  prisma.ts        # Cliente Prisma singleton
-  utils.ts         # Utilidades (cn helper)
-prisma/
-  schema.prisma    # Esquema de base de datos
-public/            # Archivos estáticos
-types/             # Tipos TypeScript globales
+├── data.ts                  # Mock data, types, and utility functions
+└── utils.ts                 # Helper utilities
 ```
 
-## Estado del Proyecto
+## Routes
 
-- [x] Next.js + TypeScript inicializado
-- [x] Tailwind CSS configurado
-- [x] shadcn/ui configurado
-- [x] Componentes base instalados
-- [ ] Modelos de datos Prisma (pendiente)
-- [ ] API endpoints (pendiente)
-- [ ] Frontend pages (pendiente)
+| Route | Description |
+|-------|-------------|
+| `/` | Home page with summoners search |
+| `/summoner/[region]/[gameName]/[tagLine]` | Summoner profile with tabs |
+
+## Example Usage
+
+1. Go to the home page
+2. Select a region (e.g., EUW, NA, KR)
+3. Enter a summoner name with tag (e.g., `Faker#KR1`)
+4. Click Search to view the profile
+
+## Mock Data
+
+The app currently uses mock data for demonstration. The mock data includes:
+- Sample summoner profile (Faker#KR1)
+- 6 ranked matches with various champions
+- Calculated champion statistics
+- Sample personal records
+
+## Customization
+
+### Adding Real API Integration
+
+To connect to the Riot Games API:
+
+1. Get an API key from [Riot Developer Portal](https://developer.riotgames.com/)
+2. Create a `.env.local` file:
+```
+RIOT_API_KEY=your_api_key_here
+```
+3. Replace mock data imports with actual API calls in the page components
+
+### Styling
+
+The dark theme uses:
+- Background: `slate-950` to `slate-900` gradients
+- Accent colors: Blue (`blue-400`), Cyan (`cyan-400`), Emerald (`emerald-400`)
+- Cards: `slate-900/50` with `slate-700/50` borders
+
+## Available Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run start` - Start production server
+- `npm run lint` - Run ESLint
+
+## Screenshots
+
+The dashboard features:
+- Responsive design (mobile-first)
+- Animated gradients and hover effects
+- Clean typography with Inter font
+- Color-coded win/loss indicators
+- Progress bars for winrates
+
+## Notes
+
+- Built for demonstration purposes with mock data
+- Responsive design works on mobile, tablet, and desktop
+- Not affiliated with Riot Games
+- Champion icons loaded from Data Dragon CDN
