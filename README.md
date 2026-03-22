@@ -1,6 +1,6 @@
 # GameStats
 
-Aplicación Next.js 14 para visualización de estadísticas de League of Legends.
+Aplicación de estadísticas para ligas deportivas.
 
 ## Stack
 
@@ -8,56 +8,78 @@ Aplicación Next.js 14 para visualización de estadísticas de League of Legends
 - TypeScript
 - Tailwind CSS
 - shadcn/ui
-- Prisma + PostgreSQL
+- PostgreSQL + Prisma
 
-## Requisitos
-
-- Node.js 18+
-- PostgreSQL
-
-## Variables de entorno
-
-Crear archivo `.env.local`:
-
-```env
-DATABASE_URL="postgresql://user:password@localhost:5432/gamestats"
-```
-
-## Comandos útiles
+## Setup Local
 
 ```bash
-# Desarrollo local
+# Instalar dependencias
+npm install
+
+# Configurar variables de entorno
+# Crear archivo .env basado en .env.example
+
+# Correr migraciones de Prisma
+npx prisma migrate dev
+
+# Iniciar servidor de desarrollo
 npm run dev
-
-# Build
-npm run build
-
-# Prisma
-npx prisma generate    # Generar cliente Prisma
-npx prisma db push     # Sincronizar schema con DB
-npx prisma studio      # Abrir Prisma Studio
-
-# Lint
-npm run lint
 ```
 
-## Estructura
+## Variables de Entorno
+
+| Variable | Descripción | Ejemplo |
+|----------|-------------|---------|
+| `DATABASE_URL` | URL de PostgreSQL | `postgresql://user:pass@localhost:5432/gamestats` |
+| `NEXTAUTH_SECRET` | Secret para NextAuth | `random-string-32-chars` |
+| `NEXTAUTH_URL` | URL de la app | `http://localhost:3000` |
+
+## Comandos Útiles
+
+```bash
+# Build de producción
+npm run build
+
+# Comprobar build
+npm run build 2>&1 | tail -20
+
+# Linting
+npm run lint
+
+# Migraciones Prisma
+npx prisma migrate dev --name migration_name
+npx prisma generate
+npx prisma studio
+
+# Chequear status git
+git status
+```
+
+## Estructura de Carpetas
 
 ```
 app/
-  (routes)/       # Rutas agrupadas
-  api/            # API routes
-  layout.tsx      # Root layout
-components/
-  ui/             # Componentes shadcn/ui
+  (routes)/        # Rutas agrupadas con layout compartido
+  api/             # API routes
+  globals.css      # Estilos globales
+  layout.tsx       # Layout raíz
+  page.tsx         # Home page
+components/ui/     # Componentes shadcn
 lib/
-  prisma.ts       # Cliente Prisma
-  utils.ts        # Utilidades (cn)
+  prisma.ts        # Cliente Prisma singleton
+  utils.ts         # Utilidades (cn helper)
 prisma/
-  schema.prisma   # Schema de base de datos
-types/            # Tipos TypeScript
+  schema.prisma    # Esquema de base de datos
+public/            # Archivos estáticos
+types/             # Tipos TypeScript globales
 ```
 
-## Estado
+## Estado del Proyecto
 
-🚧 En desarrollo inicial
+- [x] Next.js + TypeScript inicializado
+- [x] Tailwind CSS configurado
+- [x] shadcn/ui configurado
+- [x] Componentes base instalados
+- [ ] Modelos de datos Prisma (pendiente)
+- [ ] API endpoints (pendiente)
+- [ ] Frontend pages (pendiente)
