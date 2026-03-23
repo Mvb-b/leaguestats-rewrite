@@ -1,5 +1,6 @@
 import { SearchForm } from "./components/SearchForm";
-import { Trophy, BarChart3, Users } from "lucide-react";
+import { Trophy, BarChart3, Users, Search } from "lucide-react";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -17,36 +18,73 @@ export default function Home() {
           {/* Search Form */}
           <SearchForm />
 
+          {/* Multi-Search Link */}
+          <div className="mt-6">
+            <Link
+              href="/multi-search"
+              className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 transition-colors text-sm"
+            >
+              <Users className="w-4 h-4" />
+              Or use Multi-Search to analyze your team
+            </Link>
+          </div>
+
           {/* Features */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-16">
             {[
-              { 
+              {
                 icon: Trophy,
-                title: "Match History", 
-                desc: "View detailed match stats and KDA" 
+                title: "Match History",
+                desc: "View detailed match stats and KDA",
               },
-              { 
+              {
                 icon: BarChart3,
-                title: "Champion Stats", 
-                desc: "Analyze performance by champion" 
+                title: "Champion Stats",
+                desc: "Analyze performance by champion",
               },
-              { 
+              {
                 icon: Users,
-                title: "Rank Tracking", 
-                desc: "Track your LP and climb progress" 
+                title: "Rank Tracking",
+                desc: "Track your LP and climb progress",
               },
-            ].map((feature) => (
-              <div 
-                key={feature.title} 
-                className="p-6 rounded-xl bg-slate-900/50 border border-slate-800 hover:border-slate-700 transition-colors group"
-              >
-                <div className="w-12 h-12 mx-auto mb-4 rounded-lg bg-slate-800 flex items-center justify-center group-hover:bg-slate-700 transition-colors">
-                  <feature.icon className="w-6 h-6 text-cyan-400" />
+              {
+                icon: Search,
+                title: "Multi-Search",
+                desc: "Analyze entire teams at once",
+                href: "/multi-search",
+              },
+            ].map((feature) => {
+              const content = (
+                <>
+                  <div className="w-12 h-12 mx-auto mb-4 rounded-lg bg-slate-800 flex items-center justify-center group-hover:bg-slate-700 transition-colors">
+                    <feature.icon className="w-6 h-6 text-cyan-400" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-white mb-2">{feature.title}</h3>
+                  <p className="text-sm text-slate-400">{feature.desc}</p>
+                </>
+              );
+
+              if (feature.href) {
+                return (
+                  <Link
+                    key={feature.title}
+                    href={feature.href}
+                    className="p-6 rounded-xl bg-slate-900/50 border border-slate-800 hover:border-emerald-500/50 hover:bg-emerald-950/10 transition-colors group block"
+                  >
+                    {content}
+                  </Link>
+                );
+              }
+
+              return (
+                <div
+                  key={feature.title}
+                  className="p-6 rounded-xl bg-slate-900/50 border border-slate-800 hover:border-slate-700 transition-colors group"
+                >
+                  {content}
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">{feature.title}</h3>
-                <p className="text-sm text-slate-400">{feature.desc}</p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>

@@ -135,3 +135,35 @@ The dashboard features:
 - Responsive design works on mobile, tablet, and desktop
 - Not affiliated with Riot Games
 - Champion icons loaded from Data Dragon CDN
+
+## Rewind Features (Inspired by rewind.lol)
+
+New match history aggregation and statistics features:
+
+### `/summoner/[region]/[name]/[tag]/rewind`
+
+Dashboard con estadísticas agregadas de todas las partidas:
+
+- **Match History Aggregation**: Total games, winrate, KDA promedio, tiempo jugado
+- **Blue/Red Side Statistics**: Comparación de winrate por lado del mapa
+- **Custom Filters**: Filtrar por 30 días, 3 meses, 1 año, o todo el tiempo
+- **Top Champions**: Campeones más jugados con winrate y KDA
+- **Queue Statistics**: Estadísticas por modo de juego (Ranked, ARAM, etc.)
+- **Monthly Timeline**: Visualización de actividad mensual
+
+### `/summoner/[region]/[name]/[tag]/rewind/[year]`
+
+Year in Review con:
+
+- Estadísticas anuales (games, hours, winrate)
+- Campeón más jugado del año
+- Mejor campeón (5+ games, mayor winrate)
+- Modo de juego favorito
+- Mes más activo
+- Comparación entre años
+
+### APIs
+
+- `POST /api/summoner/rewind` - Stats agregadas con filtros
+- `POST /api/summoner/side-stats` - Blue/Red side analysis
+- `POST /api/summoner/rewind-year` - Yearly statistics
