@@ -31,7 +31,7 @@
     "projectUuid": "ilmavww19apwzp62jd4nv2xa",
     "dockerfileReady": true,
     "databaseConfig": "pendiente (requiere crear en UI)",
-    "domain": "gamestats.misrravb.com (a configurar)",
+    "domain": "gamestats.streamerhub.com (a configurar)",
     "notes": "API de Coolify limitada - requiere pasos manuales en UI. Ver DEPLOY.md"
   },
   "buildStatus": "success"

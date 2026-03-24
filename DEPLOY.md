@@ -2,7 +2,7 @@
 
 ## Pre-requisitos
 
-1. Acceso a Coolify en `https://manager.misrravb.com`
+1. Acceso a Coolify en `https://manager.streamerhub.com`
 2. Token de API de Coolify (ya configurado)
 3. Repo en GitHub (para deploy automático)
 
@@ -28,7 +28,7 @@
    - Build Pack: `Dockerfile`
    - Dockerfile: `./Dockerfile`
    - Port: `3000`
-   - Domain: `gamestats.misrravb.com`
+   - Domain: `gamestats.streamerhub.com`
 
 ## Paso 3: Subir a GitHub (manualemente)
 
@@ -49,7 +49,7 @@ En Coolify UI → Application → Environment:
 DATABASE_URL=postgresql://postgres:TU_PASSWORD@gamestats-db:5432/gamestats?schema=public
 RIOT_API_KEY=(obtener de developer.riotgames.com)
 NEXTAUTH_SECRET=(generar con: openssl rand -base64 32)
-NEXTAUTH_URL=https://gamestats.misrravb.com
+NEXTAUTH_URL=https://gamestats.streamerhub.com
 ```
 
 ## Paso 5: Deploy y Migrations
@@ -65,8 +65,8 @@ npx prisma migrate deploy
 
 ## Paso 6: Verificar
 
-- Health check: `https://gamestats.misrravb.com/api/health`
-- Home: `https://gamestats.misrravb.com`
+- Health check: `https://gamestats.streamerhub.com/api/health`
+- Home: `https://gamestats.streamerhub.com`
 
 ## Estructura de Archivos en Repo
 
