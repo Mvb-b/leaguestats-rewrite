@@ -2,6 +2,7 @@ import { SummonerHeader } from "@/app/components/SummonerHeader";
 import { StatsGrid } from "@/app/components/StatsGrid";
 import { MatchList } from "@/app/components/MatchList";
 import { ChampionStats } from "@/app/components/ChampionStats";
+import { SimpleBuildCard } from "@/app/components/SimpleBuildCard";
 import { RecordView } from "@/app/components/RecordView";
 import { LiveGameCard } from "@/app/components/LiveGameCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -10,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { mockSummoner, mockMatches, calculateChampionStats, Match } from "@/lib/data";
 import { Metadata } from "next";
 import Link from "next/link";
-import { History, Users } from "lucide-react";
+import { History, Users, Package, BarChart2 } from "lucide-react";
 
 interface SummonerPageProps {
   params: {
@@ -77,9 +78,11 @@ export default function SummonerPage({ params }: SummonerPageProps) {
     gameName: decodeURIComponent(params.gameName),
     tagLine: decodeURIComponent(params.tagLine),
   };
-
   const championStats = calculateChampionStats(mockMatches);
   const records = generateMockRecords(mockMatches);
+  
+  // Get top champion for build card demo
+  const topChampion = championStats[0];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 pb-12">
@@ -110,11 +113,7 @@ export default function SummonerPage({ params }: SummonerPageProps) {
 
         {/* Live Game Card */}
         <div className="mt-6">
-          <LiveGameCard
-            puuid={summoner.puuid}
-            region={summoner.region}
-            currentSummonerName={summoner.gameName}
-          />
+          <LiveGameCard puuid={summoner.puuid} region={summoner.region} currentSummonerName={summoner.gameName} />
         </div>
 
         {/* Stats Grid */}
@@ -131,6 +130,7 @@ export default function SummonerPage({ params }: SummonerPageProps) {
               <TabsTrigger value="records" className="data-[state=active]:bg-slate-800 data-[state=active]:text-white text-slate-400">Records</TabsTrigger>
               <TabsTrigger value="overview" className="data-[state=active]:bg-slate-800 data-[state=active]:text-white text-slate-400">Overview</TabsTrigger>
             </TabsList>
+
             <TabsContent value="matches" className="mt-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold text-white">Match History</h2>
@@ -138,6 +138,7 @@ export default function SummonerPage({ params }: SummonerPageProps) {
               </div>
               <MatchList matches={mockMatches} />
             </TabsContent>
+
             <TabsContent value="champions" className="mt-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold text-white">Champion Statistics</h2>
@@ -145,17 +146,70 @@ export default function SummonerPage({ params }: SummonerPageProps) {
               </div>
               <ChampionStats stats={championStats} />
             </TabsContent>
+
             <TabsContent value="records" className="mt-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold text-white">Personal Records</h2>
               </div>
               <RecordView records={records} />
             </TabsContent>
+
             <TabsContent value="overview" className="mt-6">
-              <Card className="bg-slate-900/50 border-slate-700/50 p-8 text-center">
-                <h2 className="text-xl font-bold text-white mb-2">Overview</h2>
-                <p className="text-slate-400">Detailed overview statistics coming soon...</p>
-              </Card>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Featured Champion Build */}
+                {topChampion && (
+                  <SimpleBuildCard 
+                    championId={topChampion.championId} 
+                    championName={topChampion.championName} 
+                  />
+                )}
+                
+                {/* Quick Stats */}
+                <Card className="bg-slate-900/50 border-slate-700/50">
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-2 mb-4">
+                      <BarChart2 className="w-5 h-5 text-cyan-400" />
+                      <h3 className="text-lg font-semibold text-white">Quick Stats</h3>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="p-4 rounded-lg bg-slate-800/50">
+                        <p className="text-sm text-slate-400">Win Rate</p>
+                        <p className="text-2xl font-bold text-white">{summoner.winrate}%</p>
+                      </div>
+                      <div className="p-4 rounded-lg bg-slate-800/50">
+                        <p className="text-sm text-slate-400">Total Games</p>
+                        <p className="text-2xl font-bold text-white">{summoner.wins + summoner.losses}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+              
+              {/* Available Champions Links */}
+              <div className="mt-8">
+                <Card className="bg-slate-900/50 border-slate-700/50">
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Package className="w-5 h-5 text-emerald-400" />
+                      <h3 className="text-lg font-semibold text-white">Rune Guides</h3>
+                    </div>
+                    <p className="text-slate-400 mb-4 text-sm">
+                      View recommended rune setups for popular champions
+                    </p>
+                    <div className="flex flex-wrap gap-3">
+                      {["yasuo", "zed", "jinx"].map((c) => (
+                        <Link
+                          key={c}
+                          href={`/runes/${c}`}
+                          className="px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:border-emerald-500/50 hover:text-emerald-400 transition-colors"
+                        >
+                          {c.charAt(0).toUpperCase() + c.slice(1)}
+                        </Link>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </TabsContent>
           </Tabs>
         </div>
